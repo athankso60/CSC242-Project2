@@ -16,9 +16,11 @@ public class ModelChecker{
                 break;
             case 2:
                 //run problem 
+                runProblem2();
                 break;
             case 3:
                 //run problem 3
+                runProblem3();
                 break;
             default:
                 System.out.println("Problem not implemented");
@@ -30,56 +32,144 @@ public class ModelChecker{
     void makeKnowledgeBase(int problem){
         switch(problem){
             case 1: 
-            //construct kb as p = 1, q =2 
-            //conjunctive normal form for p->q:
-            // (-p v q) ^ P => Q
-            kb.clear();
-            symbols.clear();
-            kb.add(new ArrayList<Integer>(Arrays.asList(1)));
-            kb.add(new ArrayList<Integer>(Arrays.asList(-1, 2)));
-            symbols.add(1);
-            symbols.add(2);
-            break;
+                //construct kb as p = 1, q =2 
+                //conjunctive normal form for p->q:
+                // (-p v q) ^ P => Q
+                kb.clear();
+                symbols.clear();
+                kb.add(new ArrayList<Integer>(Arrays.asList(1)));
+                kb.add(new ArrayList<Integer>(Arrays.asList(-1, 2)));
+                symbols.add(1);
+                symbols.add(2);
+                break;
+            case 2:
+                kb.clear();
+                symbols.clear();
+                //Starting Knowledgebase:
+                //R1:
+                kb.add(new ArrayList<Integer>(Arrays.asList(-1)));
+                //R2:
+                kb.add(new ArrayList<Integer>(Arrays.asList(7,-2,-3)));
+                kb.add(new ArrayList<Integer>(Arrays.asList(-7,2)));
+                kb.add(new ArrayList<Integer>(Arrays.asList(-7,3)));
+                //R3:
+                kb.add(new ArrayList<Integer>(Arrays.asList(8, -1, -4, -5)));
+                kb.add(new ArrayList<Integer>(Arrays.asList(-8, 1)));
+                kb.add(new ArrayList<Integer>(Arrays.asList(-8, 4)));
+                kb.add(new ArrayList<Integer>(Arrays.asList(-8, 5)));
+                //R7:
+                kb.add(new ArrayList<Integer>(Arrays.asList(9, -1, -4, -6)));
+                kb.add(new ArrayList<Integer>(Arrays.asList(-9, 1)));
+                kb.add(new ArrayList<Integer>(Arrays.asList(-9, 4)));
+                kb.add(new ArrayList<Integer>(Arrays.asList(-9, 6)));
+                //initial perception R4:
+                kb.add(new ArrayList<Integer>(Arrays.asList(-7)));
+                for(int i = 1; i < 10; i++){
+                    symbols.add(i);
+                }
+                break;
+            case 3:
+                kb.clear();
+                symbols.clear();
+                //mythical = 1
+                //immortal = -2 ( not mortal)
+                //mortal = 2
+                //mammal = 3
+                //horned = 4
+                //magical = 5
+                //1 ->-x2
+                kb.add(new ArrayList<Integer>(Arrays.asList(-1, -2)));
+                //-1 -> (2 and 3)
+                kb.add(new ArrayList<Integer>(Arrays.asList(1, 2)));
+                kb.add(new ArrayList<Integer>(Arrays.asList(1, 3)));
+                //(-2 or 3) -> 4
+                kb.add(new ArrayList<Integer>(Arrays.asList(4, 2)));
+                kb.add(new ArrayList<Integer>(Arrays.asList(4, -3)));
+                //4 -> 5
+                kb.add(new ArrayList<Integer>(Arrays.asList(-4, 5)));
+                for(int i = 1; i < 6; i++){
+                    symbols.add(i);
+                }
+                break;     
         }
     }
 
 
     
     void runProblem1(){
-        int P = 1;
         int Q = 2;
         makeKnowledgeBase(1);
         boolean result = TT_entails(Q);
         System.out.println(result);
     }
 
+    void runProblem2(){
+        
+        makeKnowledgeBase(2);
+        //have nice printouts 
+        System.out.println("Checking if KB entails not P(1,2)...");
+        boolean not_p12 = TT_entails(-2);
+        System.out.println(not_p12);
+
+        makeKnowledgeBase(2);
+        System.out.println("Checking if KB entails not P(2,1)...");
+        boolean not_p21 = TT_entails(-3);
+        System.out.println(not_p21);
+
+        makeKnowledgeBase(2);
+        System.out.println("Checking if KB entails P(2,2)...");
+        boolean p22 = TT_entails(4);
+        System.out.println(p22);
+
+        makeKnowledgeBase(2);
+        System.out.println("Checking if KB entails not P(2,2)...");
+        boolean not_p22 = TT_entails(-4);
+        System.out.println(not_p22);
+    }
+
+    void runProblem3(){
+        int mythical = 1;
+        int magical = 5;
+        int horned = 4;
+        makeKnowledgeBase(3);
+        boolean result1 = TT_entails(mythical); //F
+        makeKnowledgeBase(3);
+        boolean result2 = TT_entails(magical); //T
+        makeKnowledgeBase(3);
+        boolean result3 = TT_entails(horned); //T
+        System.out.println(result1);
+        System.out.println(result2);
+        System.out.println(result3);
+    }
+
     boolean TT_entails(int alpha){
-        System.out.println(symbols.toString());
         ArrayList<Boolean> model = new ArrayList<Boolean>(Collections.nCopies(symbols.size(), null));
         return TT_checkAll(kb, alpha, symbols, model);
     }
 
     boolean TT_checkAll(ArrayList<ArrayList<Integer>> kbase, int alpha, ArrayList<Integer> sym, ArrayList<Boolean> model){
+        System.out.println(model.toString());
         if(sym.isEmpty()){
             boolean pl = PL_true(kb,model);
-            System.out.println(model.toString());
             if(pl){
                 System.out.println("PL is t");
                 return PL_true(alpha, model);
             }else{
-                System.out.println("PL is f");
+               // System.out.println(model.toString());
                 return true; //when kb is false, always return true
             }
         }
         else{
-            Integer P = sym.remove(0);
-            //sym is now = to rest.
+            Integer P = sym.remove(0); //{2,3,4,5,6,8,9}
+            System.out.println("Just removed sym: " + P);
             ArrayList<Boolean> m1 = new ArrayList<Boolean>();
             m1 = deepCopy(model);
-            m1.add(P-1, Boolean.TRUE);
+            m1.set(P-1, Boolean.TRUE); //nth index in model is n-1
             ArrayList<Boolean> m2 = new ArrayList<Boolean>();
             m2 = deepCopy(model);
-            m2.add(P-1, Boolean.FALSE);
+            m2.set(P-1, Boolean.FALSE);
+            //System.out.println(m1.toString());
+            //System.out.println(m2.toString());
             return(
                 TT_checkAll(kbase, alpha, sym, m1) && 
                 TT_checkAll(kbase, alpha, sym, m2)
@@ -87,11 +177,13 @@ public class ModelChecker{
         }
     }
 
-    Boolean PL_true(int alpha, ArrayList<Boolean> model){
+    public Boolean PL_true(int alpha, ArrayList<Boolean> model){
+        System.out.println("TESTING ALPAHA");
+        System.out.println(model.toString());
         return atomic_eval((Integer) alpha, model);
     }
 
-    Boolean PL_true(ArrayList<ArrayList<Integer>> kbase, ArrayList<Boolean> model){
+    public Boolean PL_true(ArrayList<ArrayList<Integer>> kbase, ArrayList<Boolean> model){
         Boolean result = Boolean.TRUE;
         for(int i = 0; i < kbase.size(); i++){
             ArrayList<Integer> clause = kbase.get(i);
@@ -101,9 +193,19 @@ public class ModelChecker{
     }
     private Boolean pl_helper(ArrayList<Integer> clause, ArrayList<Boolean> model){
         Boolean result = Boolean.FALSE;
+
+        /*System.out.println("CLAUSE: ");
+        System.out.println(clause.toString());
+        System.out.println("MODEL: ");
+        System.out.println(model.toString());*/
+
         for(int i = 0; i < clause.size(); i++){
-            if(model.get(Math.abs(clause.get(i)) - 1) != null){
-                result = result || atomic_eval(clause.get(i), model);
+            int x = clause.get(i);
+            Boolean b = model.get(Math.abs(x) - 1);
+            if(b != null){
+                boolean bo = atomic_eval(clause.get(i), model);
+                result = result || bo;
+                
             }
         }
         return result;
@@ -113,23 +215,26 @@ public class ModelChecker{
         Boolean result = null; 
         if(atom < 0){
             Boolean assignment = model.get(Math.abs(atom) -1);
-            if(assignment.booleanValue() == true){
-                result = Boolean.FALSE;
-            }else{ 
-                result = Boolean.TRUE;
+            if(assignment != null){
+               //System.out.println("here");
+                if(assignment.booleanValue() == true){
+                    result = Boolean.FALSE;
+                }else{ 
+                    result = Boolean.TRUE;
+                }
+                return result;
             }
-            return result;
-        }else{
-            return model.get(atom - 1);
         }
+        return model.get(atom - 1);
+        
     }
 
     private <T> ArrayList<T> deepCopy(ArrayList<T> list){
-        ArrayList<T> toReturn = new ArrayList<T>(list.size());
+        ArrayList<T> toReturn = new ArrayList<T>(Collections.nCopies(list.size(), null));
         for(int i = 0; i < list.size(); i++){
-            if(list.get(i) != null){
-                toReturn.add(i, list.get(i));
-            }
+
+             toReturn.set(i, list.get(i));
+          
         }
         return toReturn;
     }
@@ -137,7 +242,10 @@ public class ModelChecker{
 
     public static void main(String[] args){
         ModelChecker mc = new ModelChecker();
-        mc.runProblem(1);
+         mc.runProblem(2);
+       //Boolean[] arr = new Boolean[] {Boolean.FALSE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE};
+       // ArrayList<Boolean> model = new ArrayList<Boolean>(Arrays.asList(arr));
+     //   System.out.println(mc.PL_true(1, model));
     }
 
 
