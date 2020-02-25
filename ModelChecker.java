@@ -133,22 +133,23 @@ public class ModelChecker{
         int horned = 4;
         makeKnowledgeBase(3);
         boolean result1 = TT_entails(mythical); //F
-        makeKnowledgeBase(3);
+       /* makeKnowledgeBase(3);
         boolean result2 = TT_entails(magical); //T
         makeKnowledgeBase(3);
-        boolean result3 = TT_entails(horned); //T
+        boolean result3 = TT_entails(horned); //T*/
         System.out.println(result1);
-        System.out.println(result2);
-        System.out.println(result3);
+        //System.out.println(result2);
+        //System.out.println(result3);
     }
 
     boolean TT_entails(int alpha){
-        ArrayList<Boolean> model = new ArrayList<Boolean>(Collections.nCopies(symbols.size(), null));
+        HashMap<Integer,Boolean> model = new HashMap<Integer,Boolean>();
         return TT_checkAll(kb, alpha, symbols, model);
     }
 
-    boolean TT_checkAll(ArrayList<ArrayList<Integer>> kbase, int alpha, ArrayList<Integer> sym, ArrayList<Boolean> model){
-        System.out.println(model.toString());
+    ArrayList<HashMap<Integer,Boolean>> penis = new ArrayList<HashMap<Integer,Boolean>>();
+    boolean TT_checkAll(ArrayList<ArrayList<Integer>> kbase, int alpha, ArrayList<Integer> sym, HashMap<Integer,Boolean> model){
+        penis.add(model);
         if(sym.isEmpty()){
             boolean pl = PL_true(kb,model);
             if(pl){
@@ -160,30 +161,22 @@ public class ModelChecker{
             }
         }
         else{
-            Integer P = sym.remove(0); //{2,3,4,5,6,8,9}
+            Integer P = sym.remove(0); //{1,2,3,4,5,6,8,9}
             System.out.println("Just removed sym: " + P);
-            ArrayList<Boolean> m1 = new ArrayList<Boolean>();
-            m1 = deepCopy(model);
-            m1.set(P-1, Boolean.TRUE); //nth index in model is n-1
-            ArrayList<Boolean> m2 = new ArrayList<Boolean>();
-            m2 = deepCopy(model);
-            m2.set(P-1, Boolean.FALSE);
-            //System.out.println(m1.toString());
-            //System.out.println(m2.toString());
             return(
-                TT_checkAll(kbase, alpha, sym, m1) && 
-                TT_checkAll(kbase, alpha, sym, m2)
+                TT_checkAll(kbase, alpha, sym, union(model, P, Boolean.TRUE)) && 
+                TT_checkAll(kbase, alpha, sym, union(model, P, Boolean.FALSE))
             );
         }
     }
 
-    public Boolean PL_true(int alpha, ArrayList<Boolean> model){
+    public Boolean PL_true(int alpha, HashMap<Integer,Boolean> model){
         System.out.println("TESTING ALPAHA");
         System.out.println(model.toString());
         return atomic_eval((Integer) alpha, model);
     }
 
-    public Boolean PL_true(ArrayList<ArrayList<Integer>> kbase, ArrayList<Boolean> model){
+    public Boolean PL_true(ArrayList<ArrayList<Integer>> kbase,HashMap<Integer,Boolean> model){
         Boolean result = Boolean.TRUE;
         for(int i = 0; i < kbase.size(); i++){
             ArrayList<Integer> clause = kbase.get(i);
@@ -191,7 +184,7 @@ public class ModelChecker{
         }
         return result;
     }
-    private Boolean pl_helper(ArrayList<Integer> clause, ArrayList<Boolean> model){
+    private Boolean pl_helper(ArrayList<Integer> clause, HashMap<Integer, Boolean> model){
         Boolean result = Boolean.FALSE;
 
         /*System.out.println("CLAUSE: ");
@@ -201,7 +194,7 @@ public class ModelChecker{
 
         for(int i = 0; i < clause.size(); i++){
             int x = clause.get(i);
-            Boolean b = model.get(Math.abs(x) - 1);
+            Boolean b = model.get(Math.abs(x));
             if(b != null){
                 boolean bo = atomic_eval(clause.get(i), model);
                 result = result || bo;
@@ -211,10 +204,10 @@ public class ModelChecker{
         return result;
     }
 
-    private Boolean atomic_eval(Integer atom, ArrayList<Boolean> model){
+    private Boolean atomic_eval(Integer atom, HashMap<Integer, Boolean> model){
         Boolean result = null; 
         if(atom < 0){
-            Boolean assignment = model.get(Math.abs(atom) -1);
+            Boolean assignment = model.get(Math.abs(atom));
             if(assignment != null){
                //System.out.println("here");
                 if(assignment.booleanValue() == true){
@@ -225,24 +218,24 @@ public class ModelChecker{
                 return result;
             }
         }
-        return model.get(atom - 1);
+        return model.get(atom);
         
     }
 
-    private <T> ArrayList<T> deepCopy(ArrayList<T> list){
-        ArrayList<T> toReturn = new ArrayList<T>(Collections.nCopies(list.size(), null));
-        for(int i = 0; i < list.size(); i++){
-
-             toReturn.set(i, list.get(i));
-          
-        }
+    private <T,E> HashMap<T,E> union(HashMap<T,E> map, T key, E b){
+        HashMap<T,E> toReturn = new HashMap<T,E>();
+        toReturn.putAll(map);
+        toReturn.put(key,b);
         return toReturn;
     }
 
 
     public static void main(String[] args){
         ModelChecker mc = new ModelChecker();
-         mc.runProblem(2);
+         mc.runProblem(3);
+       for(HashMap<Integer,Boolean> map : mc.penis){
+           System.out.println(map.toString());
+       }
        //Boolean[] arr = new Boolean[] {Boolean.FALSE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE};
        // ArrayList<Boolean> model = new ArrayList<Boolean>(Arrays.asList(arr));
      //   System.out.println(mc.PL_true(1, model));
