@@ -26,17 +26,17 @@ public class DimacsReader{
                   if(str.charAt(0) == 'p'){
                     System.out.println(str);
                     String[] pArr = str.split(" ");
-                    maxVariable = Integer.parseInt(pArr[2]);
-                    numClauses = Integer.parseInt(pArr[3]);
+                    maxVariable = Integer.parseInt(pArr[2].trim());
+                    numClauses = Integer.parseInt(pArr[3].trim());
                     System.out.println("Num clauses: " + numClauses + "\n max Variable: " + maxVariable);
 
                    // System.out.println(pArr[4]);
                   }else if(str.charAt(0) != 'c'){
-                    String[] clauseArr = str.split("\\s+");
+                    String[] clauseArr = str.trim().split("\\s+");
                     ArrayList<Integer> list = new ArrayList<Integer>();
                     for(int i = 0; i < clauseArr.length; i++){
-                      System.out.println(clauseArr[i]);
-                      int num = Integer.parseInt(clauseArr[i]);
+                      //System.out.println(clauseArr[i]);
+                      int num = Integer.parseInt(clauseArr[i].trim());
                       list.add(num);
                     }
                     clauses.add(list);
@@ -46,10 +46,10 @@ public class DimacsReader{
               for(int i = 1; i < contentArr.length; i++){
                 String str = contentArr[i];
                 if(str.charAt(0) != 'c'){
-                  String[] clauseArr = str.split("\\s+");
+                  String[] clauseArr = str.trim().split("\\s+");
                   ArrayList<Integer> list = new ArrayList<Integer>();
                   for(int j = 0; j < clauseArr.length; j++){
-                    int num = Integer.parseInt(clauseArr[j]);
+                    int num = Integer.parseInt(clauseArr[j].trim());
                     list.add(num);
                   }
                   clauses.add(list);
@@ -65,9 +65,15 @@ public class DimacsReader{
           }
     }
 
+    public ArrayList<ArrayList<Integer>> getClauses(){
+      return clauses;
+    }
+
+
     public static void main(String args[]){
         DimacsReader dr = new DimacsReader();
-        dr.readFile("CSC242_Project_2_cnf/cnf/hole6.cnf.txt");
+       dr.readFile("CSC242_Project_2_cnf/nqueens/nqueens_4.cnf");
+       //dr.readFile("problem1.cnf");
         for(ArrayList<Integer> list : dr.clauses){
           System.out.println("\nClause: ");
           for(Integer n: list){

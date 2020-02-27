@@ -5,8 +5,6 @@ public class ModelChecker{
 
     }
 
-
-    
     public ArrayList<ArrayList<Integer>> kb = new ArrayList<ArrayList<Integer>>();
     private ArrayList<Integer> symbols = new ArrayList<Integer>();
     public void runProblem(int problem){
@@ -24,17 +22,13 @@ public class ModelChecker{
                 break;
             default:
                 System.out.println("Problem not implemented");
-
         }
-
     }
 
     void makeKnowledgeBase(int problem){
         switch(problem){
             case 1: 
                 //construct kb as p = 1, q =2 
-                //conjunctive normal form for p->q:
-                // (-p v q) ^ P => Q
                 kb.clear();
                 symbols.clear();
                 kb.add(new ArrayList<Integer>(Arrays.asList(1)));
@@ -94,8 +88,6 @@ public class ModelChecker{
         }
     }
 
-
-    
     void runProblem1(){
         System.out.println("\nRunning Problem 1:\n");
         int Q = 2;
@@ -206,20 +198,22 @@ public class ModelChecker{
         }
     }
 
+    /** @return true if the model assignments keeps alpha true */
     public Boolean PL_true(ArrayList<Integer> alpha, HashMap<Integer,Boolean> model){
         return pl_helper(alpha, model);
     }
 
-    public Boolean PL_true_kb(ArrayList<ArrayList<Integer>> sentence,HashMap<Integer,Boolean> model){
+    /**@return true if model assignments maintain a truthful knowledge base , else return false */
+    public static Boolean PL_true_kb(ArrayList<ArrayList<Integer>> kbase,HashMap<Integer,Boolean> model){
         Boolean result = Boolean.TRUE;
-        for(int i = 0; i < sentence.size(); i++){
-            ArrayList<Integer> clause = sentence.get(i);
+        for(int i = 0; i < kbase.size(); i++){
+            ArrayList<Integer> clause = kbase.get(i);
             result = result && pl_helper(clause,model);
         }
         return result;
     }
-    
-    private Boolean pl_helper(ArrayList<Integer> clause, HashMap<Integer, Boolean> model){
+    /** @return true if model assignment maintain a truthful singular clause */
+    public static Boolean pl_helper(ArrayList<Integer> clause, HashMap<Integer, Boolean> model){
         Boolean result = Boolean.FALSE;
         for(int i = 0; i < clause.size(); i++){
             int x = clause.get(i);
@@ -232,8 +226,8 @@ public class ModelChecker{
         return result;
     }
 
-    private Boolean atomic_eval(Integer atom, HashMap<Integer, Boolean> model){
-        Boolean result = null; 
+    
+    public static Boolean atomic_eval(Integer atom, HashMap<Integer, Boolean> model){
         if(atom < 0){
             Boolean assignment = model.get(Math.abs(atom));
             if(assignment != null){
