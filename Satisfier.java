@@ -23,7 +23,6 @@ public class Satisfier{
         if(explored.contains(toReturn)){
             getRandomAssignment();
         }
-        System.out.println(toReturn.size());
         return toReturn;
     }
 
@@ -42,10 +41,11 @@ public class Satisfier{
     private Integer maxHeuristic(HashMap<Integer,Boolean> T){
         //get # of clauses that T currently accepts
         int maxValue = 0;
-        Integer toReturn = (Integer) 1;
+        Integer toReturn = (Integer) 0;
         for(Map.Entry<Integer,Boolean> entry : T.entrySet()){
             //get # of clauses that would be accepted if T.get(i) were flipped
-            int temp = getNumAcceptingClauses(flip(T, entry.getKey().intValue()));
+            HashMap<Integer,Boolean> map = flip(T, entry.getKey());
+            int temp = getNumAcceptingClauses(map);
             if(temp > maxValue){
                // System.out.println("Finding new max val");
                 maxValue = temp;
@@ -53,18 +53,18 @@ public class Satisfier{
                 
             }
         }
-       // System.out.println("Key is now: " + toReturn);
+        //System.out.println("Key is now: " + toReturn);
         //System.out.println("Maxvalue is now: " + maxValue);
         return toReturn;
 
     }
 
-    private HashMap<Integer,Boolean> flip(HashMap<Integer,Boolean> map, int index){
-        //System.out.println(map.toString());
-       // System.out.println(index);
-        Boolean b = map.get((Integer) index);
-        map.put((Integer) index, !b);
-        return map;
+    private HashMap<Integer,Boolean> flip(HashMap<Integer,Boolean> map, Integer index){ 
+        HashMap<Integer,Boolean> toReturn = new HashMap<Integer,Boolean>();
+        toReturn.putAll(map);
+        Boolean b = map.get(index);
+        toReturn.put(index, !b);
+        return toReturn;
     }
 
 
@@ -99,10 +99,8 @@ public class Satisfier{
                     return T;
                 }
                 Integer p = maxHeuristic(T);
-                Boolean pVal = T.get(p);
-                //System.out.println(T.toString());
-                T.put(p, !pVal);
-                if(tracing && j % 500 == 0){
+                T = flip(T,p);
+                if(tracing){
                     System.out.println("According to heuristic, index " + p + " flipped.");
                     System.out.println("Model is now: ");
                     System.out.println(T.toString());
@@ -119,12 +117,12 @@ public class Satisfier{
 
         Scanner scan = new Scanner(System.in);
         System.out.println("What problem do you want to test? (Type number)");
-        System.out.println("1: Problem 1\n2: Quinn.cnf\n3:Aim-50-1_6-yes1-4.cnf\n4: nqueens of n=4\n5: Quit satisfier");
+        System.out.println("1: Problem 1\n2: Quinn.cnf\n3:Aim-50-1_6-yes1-4.cnf\n4: nqueens of n=4\n5: nqueens of n=8\n6: nqueens of n=12\n7: nqueens of n = 16 *Warning may take a long time or not work\n8: Quit satisfier");
         int choice = scan.nextInt();
-        while(choice != 5){
-            System.out.println("What value of MAX-FLIPS would you like?\nSuggested values:500-1000 for a quick test, 5000 or above for a more comprehensive test");
+        while(choice != 8){
+            System.out.println("What value of MAX-FLIPS would you like?\nSuggested values:10-100 for a quick test, 1000 or above for a more comprehensive test");
             int mf = scan.nextInt();
-            System.out.println("What value of MAX-TRIES would you like?\nSuggested values:500-1000 for a quick test, 5000 or above for a more comprehensive test");
+            System.out.println("What value of MAX-TRIES would you like?\nSuggested values:10-100 for a quick test, 1000 or above for a more comprehensive test");
             int mt = scan.nextInt();
             System.out.println("Would you like to enable tracing? (warning: tracing may lead to a lot of text and worse performance.)\n Type y/n");
             String yn = scan.next();
@@ -147,6 +145,18 @@ public class Satisfier{
                     Satisfier p4 = new Satisfier("CSC242_Project_2_cnf/nqueens/nqueens_4.cnf");
                     result = p4.GSAT(mf, mt, tracing);
                     break;
+                case 5:
+                    Satisfier p5 = new Satisfier("CSC242_Project_2_cnf/nqueens/nqueens_8.cnf");
+                    result = p5.GSAT(mf, mt, tracing);
+                    break;
+                case 6:
+                    Satisfier p6 = new Satisfier("CSC242_Project_2_cnf/nqueens/nqueens_12.cnf");
+                    result = p6.GSAT(mf, mt, tracing);
+                    break;
+                case 7:
+                    Satisfier p7 = new Satisfier("CSC242_Project_2_cnf/nqueens/nqueens_16.cnf");
+                    result = p7.GSAT(mf, mt, tracing);
+                    break;
                 default:
                     System.out.println("Not a valid input. Try again.");
             }
@@ -157,7 +167,7 @@ public class Satisfier{
                 System.out.println("Found satisfying model!!!!");
                 System.out.println("Printing model assignment, variable number followed by truth value...");
                 for(Map.Entry<Integer,Boolean> entry: result.entrySet()){
-                    System.out.println(entry.getKey() + ", " + entry.getValue());
+                    System.out.println(entry.getKey() + ": " + entry.getValue());
                 }   
             }
             
