@@ -92,15 +92,20 @@ public class ModelChecker{
         System.out.println("\nRunning Problem 1:\n");
         int Q = 2;
         makeKnowledgeBase(1);
+        printKnowledgebase();
         boolean result = TT_entails(new ArrayList<Integer>(Arrays.asList(Q)));
         System.out.println("Checking if KB entails Q...");
         System.out.println(result);
+
+        System.out.println("DONE");
+
     }
 
     void runProblem2(){
         System.out.println("\nRunning Problem 2:\n");
 
         makeKnowledgeBase(2);
+        printKnowledgebase();
         System.out.println("Checking if KB entails not P(1,2)...");
         boolean not_p12 = TT_entails(new ArrayList<Integer>(Arrays.asList(-2)));
         System.out.println(not_p12);
@@ -152,6 +157,9 @@ public class ModelChecker{
         System.out.println("Checking if KB entails P(3,1)...");
         p31 = TT_entails(new ArrayList<Integer>(Arrays.asList(5)));
         System.out.println(p31); 
+
+        System.out.println("DONE");
+
     }
     
     void runProblem3(){
@@ -160,10 +168,9 @@ public class ModelChecker{
         int magical = 5;
         int horned = 4;
         makeKnowledgeBase(3);
+        printKnowledgebase();
         boolean result1 = TT_entails(new ArrayList<Integer>(Arrays.asList(mythical)));
-        makeKnowledgeBase(3);
         boolean result2 = TT_entails(new ArrayList<Integer>(Arrays.asList(magical)));
-        makeKnowledgeBase(3);
         boolean result3 = TT_entails(new ArrayList<Integer>(Arrays.asList(horned)));
         System.out.println("Checking if KB entails Mythical...");
         System.out.println(result1);
@@ -171,7 +178,21 @@ public class ModelChecker{
         System.out.println(result2);
         System.out.println("Checking if KB entails Horned...");
         System.out.println(result3);
+        System.out.println("DONE");
     }
+
+    void printKnowledgebase(){
+        System.out.println("Printing Knowledgebase...");
+        for(ArrayList<Integer> clause : kb){
+            System.out.print("Clause: ");
+            for(Integer i : clause){
+                System.out.print(i + " ");
+            }
+            System.out.println();
+        } 
+        System.out.println("Loaded Knowledgebase.");
+    }
+
 
     boolean TT_entails(ArrayList<Integer> alpha){
         HashMap<Integer,Boolean> model = new HashMap<Integer,Boolean>();

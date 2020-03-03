@@ -87,10 +87,10 @@ public class Satisfier{
 
     /** @return a map of symbols and truth assignments or an empty map*/
     HashMap<Integer,Boolean> GSAT(int maxFlips, int maxTries, boolean tracing){
-        //tracing will print info every 50 times to avoid screen clutter
+        System.out.println("Running GSAT...");
         for(int i = 0; i < maxTries; i++){
             HashMap<Integer,Boolean> T  = getRandomAssignment();
-            if(tracing && i % 100 == 0){
+            if(tracing){
                 System.out.println("Generated " + i+1 + "th random assignment...");
                 System.out.println(T.toString());
             }
@@ -172,7 +172,7 @@ public class Satisfier{
             }
             
             System.out.println("What problem do you want to test? (Type number)");
-            System.out.println("1: Problem 1\n2: Quinn.cnf\n3:Aim-50-1_6-yes1-4.cnf\n4: nqueens of n=4\n5: Quit satisfier");
+            System.out.println("1: Problem 1\n2: Quinn.cnf\n3:Aim-50-1_6-yes1-4.cnf\n4: nqueens of n=4\n5: nqueens of n=8\n6: nqueens of n=12\n7: nqueens of n = 16 *Warning may take a long time or not work\n8: Quit satisfier");
             choice = scan.nextInt();
         }
 

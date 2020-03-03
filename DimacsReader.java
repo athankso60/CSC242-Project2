@@ -17,11 +17,13 @@ public class DimacsReader{
         try {
             File myObj = new File(path);
             Path p = myObj.toPath();
+            System.out.println("READING FILE....");
               String content = Files.readString(p, StandardCharsets.US_ASCII);
               String[] contentArr = content.split("\\s0\\s+"); //delimit the content by a 0 seperated by white space on each side
               /** parse header part */
               String header = contentArr[0];
               String[] headerArr = header.split("\n");
+              System.out.println("Header of file: ");
               for(String str : headerArr){ //organize header part
                   if(str.charAt(0) == 'p'){
                     System.out.println(str);
@@ -60,7 +62,7 @@ public class DimacsReader{
              // System.out.println(content);
             
           } catch (IOException e) {
-            System.out.println("An error occurred.");
+            System.out.println("An IOexception occurred.Check your path.");
             e.printStackTrace();
           }
     }
@@ -72,8 +74,13 @@ public class DimacsReader{
 
     public static void main(String args[]){
         DimacsReader dr = new DimacsReader();
-       dr.readFile("CSC242_Project_2_cnf/nqueens/nqueens_4.cnf");
+      /*** examples of things you can run  */
+      // dr.readFile("CSC242_Project_2_cnf/nqueens/nqueens_4.cnf");
        //dr.readFile("problem1.cnf");
+       Scanner scanner = new Scanner(System.in);
+       System.out.println("Please enter file path of .cnf file: ");
+       String path = scanner.next();
+       dr.readFile(path);
         for(ArrayList<Integer> list : dr.clauses){
           System.out.println("\nClause: ");
           for(Integer n: list){
